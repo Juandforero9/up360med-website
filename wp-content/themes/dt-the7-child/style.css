@@ -1,0 +1,103 @@
+/*
+Theme Name: the7dtchild
+Author: Dream-Theme
+Author URI: http://dream-theme.com/
+Description: The7 is perfectly scalable, performance and SEO optimized, responsive, retina ready multipurpose WordPress theme. It will fit every site – big or small. From huge corporate portals to studio or personal sites – The7 will become a great foundation for your next project!
+Version: 1.0.0
+License: This WordPress theme is comprised of two parts: (1) The PHP code and integrated HTML are licensed under the GPL license as is WordPress itself.  You will find a copy of the license text in the same directory as this text file. Or you can read it here: http://wordpress.org/about/gpl/ (2) All other parts of the theme including, but not limited to the CSS code, images, and design are licensed according to the license purchased. Read about licensing details here: http://themeforest.net/licenses/regular_extended
+Template: dt-the7
+*/
+
+.branding a img, .branding img {
+    width: 80px;
+}
+.fixed-masthead.sticky-on header .mini-widgets * {
+    color: #333539;
+}
+.sticky-mobile-on .mobile-mini-widgets .microwidget-btn i, .sticky-mobile-on .mobile-mini-widgets .microwidget-btn span{
+	color: #333539 !important;
+}
+.borderradius50px .upb_row_bg{
+	border-radius:30px;
+}
+div#main {
+    z-index: 1;
+}
+/* UL estilo “píldoras” con chulo a la izquierda */
+ul.listachulo{
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.listachulo li{
+  position: relative;
+  display: flex;
+  align-items: center;
+
+  /* espacio para el ícono */
+  padding: 10px 10px 10px 50px;
+  margin: 15px 0;
+
+  background: rgba(255,255,255,.92);
+  border-radius: 999px;
+
+  /* sombra suave como en la imagen */
+  box-shadow: 0 10px 26px rgba(0,0,0,.08);
+  font-weight: 500;
+  color: #646580;
+}
+.listachulo.v2 li{
+	background:none;
+	box-shadow:none;
+	margin:0px;
+}
+.listachulo li::before{
+  content: "";
+  position: absolute;
+  left: 20px;
+  top: 50%;
+  transform: translateY(-50%);
+
+  width: 20px;
+  height: 20px;
+
+  background: url("https://up360med.com/wp-content/uploads/2026/02/libullet.png") center / contain no-repeat;
+}
+
+/* Ajustes mobile */
+@media (max-width: 480px){
+  .listachulo li{
+    padding: 14px 16px 14px 58px;
+    border-radius: 22px; /* menos “pastilla” si no cabe */
+  }
+  .listachulo li::before{
+    left: 18px;
+    width: 28px;
+    height: 28px;
+  }
+}
+.informacionesicono .text-icon {
+    position: absolute;
+    top: -80px;
+}
+.informacionesicono {
+    border-radius: 20px;
+	margin-bottom:50px;
+}
+.imagencrmservicios .bb-top-title {
+    position: absolute !important;
+    bottom: 0;
+}
+.mobile-header-bar .mobile-branding img {
+    width: 100px;
+}
+a.botonwhatsapp {
+    position: fixed;
+    right: 20px;
+    bottom: 25%;
+    z-index: 100;
+}
+a.botonwhatsapp img {
+    width: 40px;
+}

@@ -1,0 +1,69 @@
+Log created: 2026-02-18 17:38:16
+Type: backup
+[2026-02-18 17:38:16][notice]Start backing up.
+[2026-02-18 17:38:16][notice]server info fcgi:Off max execution time: 300 wp version:6.9.1 php version:8.3.30 db version:8.0.45 php ini:safe_mode: memory_limit:512M memory_get_usage:7,75 MB memory_get_peak_usage:8,12 MB extensions:PDO enabled curl enabled zlib enabled   is_multisite:0
+[2026-02-18 17:38:16][notice]Prepare to backup backup_db files.
+[2026-02-18 17:38:16][notice]Start exporting database.
+[2026-02-18 17:38:16][notice]Preparing to dump table wpmj_revslider_layer_animations
+[2026-02-18 17:38:16][notice]Preparing to dump table wpmj_revslider_navigations
+[2026-02-18 17:38:16][notice]Preparing to dump table wpmj_wpfm_backup
+[2026-02-18 17:38:16][notice]Preparing to dump table wpmj_lc_custom_values
+[2026-02-18 17:38:16][notice]Preparing to dump table wpmj_links
+[2026-02-18 17:38:16][notice]Preparing to dump table wpmj_revslider_sliders
+[2026-02-18 17:38:16][notice]Preparing to dump table wpmj_revslider_sliders7
+[2026-02-18 17:38:16][notice]Preparing to dump table wpmj_revslider_slides
+[2026-02-18 17:38:16][notice]Preparing to dump table wpmj_revslider_slides7
+[2026-02-18 17:38:16][notice]Preparing to dump table wpmj_revslider_static_slides
+[2026-02-18 17:38:16][notice]Preparing to dump table wpmj_term_relationships
+[2026-02-18 17:38:16][notice]Preparing to dump table wpmj_commentmeta
+[2026-02-18 17:38:16][notice]Preparing to dump table wpmj_term_taxonomy
+[2026-02-18 17:38:16][notice]Preparing to dump table wpmj_termmeta
+[2026-02-18 17:38:16][notice]Preparing to dump table wpmj_terms
+[2026-02-18 17:38:16][notice]Preparing to dump table wpmj_usermeta
+[2026-02-18 17:38:16][notice]Preparing to dump table wpmj_users
+[2026-02-18 17:38:16][notice]Preparing to dump table wpmj_comments
+[2026-02-18 17:38:16][notice]Preparing to dump table wpmj_revslider_css
+[2026-02-18 17:38:16][notice]Preparing to dump table wpmj_postmeta
+[2026-02-18 17:38:16][notice]Preparing to dump table wpmj_posts
+[2026-02-18 17:38:16][notice]Preparing to dump table wpmj_options
+[2026-02-18 17:38:16][notice]Exporting database finished.
+[2026-02-18 17:38:16][notice]Start compressing database
+[2026-02-18 17:38:16][notice]Prepare to zip file. file: up360med.com_wpvivid-3be86c7921e74_2026-02-18-17-38_backup_db.sql
+[2026-02-18 17:38:17][notice]Adding zip files completed.up360med.com_wpvivid-3be86c7921e74_2026-02-18-17-38_backup_db.part001.zip, filesize: 673,54 KB
+[2026-02-18 17:38:17][notice]Compressing database completed
+[2026-02-18 17:38:17][notice]Backing up backup_db completed.
+[2026-02-18 17:38:17][notice]Prepare to backup backup_themes files.
+[2026-02-18 17:38:17][notice]Compressing zip file:up360med.com_wpvivid-3be86c7921e74_2026-02-18-17-38_backup_themes.part001.zip index:3191
+[2026-02-18 17:38:19][notice]Compressing zip file:up360med.com_wpvivid-3be86c7921e74_2026-02-18-17-38_backup_themes.part001.zip success. index:3191 file size:19,78 MB
+[2026-02-18 17:38:20][notice]Backing up backup_themes completed.
+[2026-02-18 17:38:20][notice]Prepare to backup backup_plugin files.
+[2026-02-18 17:38:20][notice]Compressing zip file:up360med.com_wpvivid-3be86c7921e74_2026-02-18-17-38_backup_plugin.part001.zip index:7342
+[2026-02-18 17:38:28][notice]Compressing zip file:up360med.com_wpvivid-3be86c7921e74_2026-02-18-17-38_backup_plugin.part001.zip success. index:7342 file size:45,06 MB
+[2026-02-18 17:38:29][notice]Backing up backup_plugin completed.
+[2026-02-18 17:38:29][notice]Prepare to backup backup_uploads files.
+[2026-02-18 17:38:29][notice]Compressing zip file:up360med.com_wpvivid-3be86c7921e74_2026-02-18-17-38_backup_uploads.part001.zip index:261
+[2026-02-18 17:38:29][notice]Compressing zip file:up360med.com_wpvivid-3be86c7921e74_2026-02-18-17-38_backup_uploads.part001.zip success. index:261 file size:11,98 MB
+[2026-02-18 17:38:29][notice]Backing up backup_uploads completed.
+[2026-02-18 17:38:29][notice]Prepare to backup backup_content files.
+[2026-02-18 17:38:29][notice]Compressing zip file:up360med.com_wpvivid-3be86c7921e74_2026-02-18-17-38_backup_content.part001.zip index:171
+[2026-02-18 17:38:30][notice]Compressing zip file:up360med.com_wpvivid-3be86c7921e74_2026-02-18-17-38_backup_content.part001.zip success. index:171 file size:2,41 MB
+[2026-02-18 17:38:30][notice]Backing up backup_content completed.
+[2026-02-18 17:38:30][notice]Prepare to backup backup_core files.
+[2026-02-18 17:38:30][notice]Compressing zip file:up360med.com_wpvivid-3be86c7921e74_2026-02-18-17-38_backup_core.part001.zip index:2918
+[2026-02-18 17:38:34][notice]Compressing zip file:up360med.com_wpvivid-3be86c7921e74_2026-02-18-17-38_backup_core.part001.zip success. index:2918 file size:14,59 MB
+[2026-02-18 17:38:34][notice]Backing up backup_core completed.
+[2026-02-18 17:38:34][notice]Prepare to backup backup_merge files.
+[2026-02-18 17:38:34][notice]Prepare to zip file. file: up360med.com_wpvivid-3be86c7921e74_2026-02-18-17-38_backup_db.zip
+[2026-02-18 17:38:34][notice]Adding zip files completed.up360med.com_wpvivid-3be86c7921e74_2026-02-18-17-38_backup_all.part001.zip, filesize: 579,95 KB
+[2026-02-18 17:38:34][notice]Prepare to zip file. file: up360med.com_wpvivid-3be86c7921e74_2026-02-18-17-38_backup_themes.zip
+[2026-02-18 17:38:34][notice]Adding zip files completed.up360med.com_wpvivid-3be86c7921e74_2026-02-18-17-38_backup_all.part001.zip, filesize: 19,50 MB
+[2026-02-18 17:38:34][notice]Prepare to zip file. file: up360med.com_wpvivid-3be86c7921e74_2026-02-18-17-38_backup_plugin.zip
+[2026-02-18 17:38:36][notice]Adding zip files completed.up360med.com_wpvivid-3be86c7921e74_2026-02-18-17-38_backup_all.part001.zip, filesize: 62,97 MB
+[2026-02-18 17:38:36][notice]Prepare to zip file. file: up360med.com_wpvivid-3be86c7921e74_2026-02-18-17-38_backup_uploads.zip
+[2026-02-18 17:38:36][notice]Adding zip files completed.up360med.com_wpvivid-3be86c7921e74_2026-02-18-17-38_backup_all.part001.zip, filesize: 74,94 MB
+[2026-02-18 17:38:36][notice]Prepare to zip file. file: up360med.com_wpvivid-3be86c7921e74_2026-02-18-17-38_backup_content.zip
+[2026-02-18 17:38:36][notice]Adding zip files completed.up360med.com_wpvivid-3be86c7921e74_2026-02-18-17-38_backup_all.part001.zip, filesize: 77,34 MB
+[2026-02-18 17:38:36][notice]Prepare to zip file. file: up360med.com_wpvivid-3be86c7921e74_2026-02-18-17-38_backup_core.zip
+[2026-02-18 17:38:37][notice]Adding zip files completed.up360med.com_wpvivid-3be86c7921e74_2026-02-18-17-38_backup_all.part001.zip, filesize: 91,50 MB
+[2026-02-18 17:38:37][notice]Backing up backup_merge completed.
+[2026-02-18 17:38:37][notice]Backup completed.
