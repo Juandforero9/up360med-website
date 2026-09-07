@@ -86,6 +86,20 @@ class WooCommerce extends Conversion_Events_Provider {
 	}
 
 	/**
+	 * Gets the conversion event names directly tracked by Site Kit's Plugin Conversion Reporting feature.
+	 *
+	 * Overrides the base implementation to exclude events already handled by the Google Analytics
+	 * for WooCommerce add-on, so the internal feature metric only reflects what Site Kit itself tracks.
+	 *
+	 * @since 1.182.0
+	 *
+	 * @return array List of event names.
+	 */
+	public function get_site_kit_event_names() {
+		return $this->events_to_track();
+	}
+
+	/**
 	 * Gets the enhanced conversion event names that are tracked by this provider.
 	 *
 	 * @since 1.165.0
@@ -281,7 +295,7 @@ class WooCommerce extends Conversion_Events_Provider {
 
 	/**
 	 * Returns an array of product data in the required format.
-	 * Adapted from https://github.com/woocommerce/woocommerce-google-analytics-integration
+	 * Adapted from https://github.com/woocommerce/woocommerce-google-analytics-integration.
 	 *
 	 * @since 1.153.0
 	 *
@@ -352,7 +366,7 @@ class WooCommerce extends Conversion_Events_Provider {
 
 	/**
 	 * Returns an array of order data in the required format.
-	 * Adapted from https://github.com/woocommerce/woocommerce-google-analytics-integration
+	 * Adapted from https://github.com/woocommerce/woocommerce-google-analytics-integration.
 	 *
 	 * @since 1.153.0
 	 *
@@ -567,7 +581,7 @@ class WooCommerce extends Conversion_Events_Provider {
 
 	/**
 	 * Formats a price the same way WooCommerce Blocks does.
-	 * Taken from https://github.com/woocommerce/woocommerce-google-analytics-integration
+	 * Taken from https://github.com/woocommerce/woocommerce-google-analytics-integration.
 	 *
 	 * @since 1.153.0
 	 *
@@ -606,7 +620,11 @@ class WooCommerce extends Conversion_Events_Provider {
 		// If there isn't a valid order for this ID, or if this order
 		// already has a purchase event tracked for it, return early
 		// and don't output the script tag to track the purchase event.
-		if ( ! $order || $order->get_meta( '_googlesitekit_ga_purchase_event_tracked' ) === '1' ) {
+		if (
+			! $order ||
+			! $order instanceof WC_Order ||
+			$order->get_meta( '_googlesitekit_ga_purchase_event_tracked' ) === '1'
+		) {
 			return;
 		}
 

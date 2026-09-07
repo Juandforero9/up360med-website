@@ -2,9 +2,9 @@
 
 Contributors:      google
 Requires at least: 5.2
-Tested up to:      7.0
+Tested up to:      7.1
 Requires PHP:      7.4
-Stable tag:        1.181.0
+Stable tag:        1.186.0
 License:           Apache License 2.0
 License URI:       https://www.apache.org/licenses/LICENSE-2.0
 Tags:              google, search-console, analytics, adsense, pagespeed-insights
@@ -112,35 +112,34 @@ Please create a new topic on our [WordPress.org support forum](https://wordpress
 
 == Changelog ==
 
-= 1.181.0 =
+= 1.186.0 =
 
 **Enhanced**
 
-* Add custom dimension breakdown notice message to Site Goals widgets/side panel settings. See [#12800](https://github.com/google/site-kit-wp/issues/12800).
-* Add an auto-updates opt-in checkbox to the plugin activation banner, allowing users to enable automatic updates when starting the setup process. See [#12793](https://github.com/google/site-kit-wp/issues/12793).
-* Update the Welcome modal's copy for view-only users. See [#12792](https://github.com/google/site-kit-wp/issues/12792).
-* Update the new splash screen's copy for secondary administrators. See [#12790](https://github.com/google/site-kit-wp/issues/12790).
-* Update Site Goals settings to be persisted in the user settings. See [#12780](https://github.com/google/site-kit-wp/issues/12780).
-* Add new dimensions for events using Event Providers in Extended Conversion Tracking. See [#12775](https://github.com/google/site-kit-wp/issues/12775).
-* Update Site Goals widgets not to show up if no event provider plugins are activated. See [#12765](https://github.com/google/site-kit-wp/issues/12765).
-* Add Custom Dimensions setup in Analytics Settings. See [#12738](https://github.com/google/site-kit-wp/issues/12738).
-* Add Top Authors goal driver to goal drivers section and side panel. See [#12734](https://github.com/google/site-kit-wp/issues/12734).
-* Update the PDF orchestrator and side sheet to be driven from the widget registry and core/pdf store. See [#12631](https://github.com/google/site-kit-wp/issues/12631).
-* Add PDF Report support for the All Traffic Widget. See [#12630](https://github.com/google/site-kit-wp/issues/12630).
-* Add Site Goals feature tour. See [#12600](https://github.com/google/site-kit-wp/issues/12600).
-* Standardize icon sizes in navigation links. See [#12598](https://github.com/google/site-kit-wp/issues/12598).
-* Update Analytics setup redirects to use golink format. See [#12579](https://github.com/google/site-kit-wp/issues/12579).
-* Add support for manual download and retry in PDF generation snackbars. See [#12562](https://github.com/google/site-kit-wp/issues/12562).
-* Implement an MVP that exports a basic PDF document. See [#12536](https://github.com/google/site-kit-wp/issues/12536).
-* Scroll to bring the Internal Server Error banner into view when it's displayed. See [#12445](https://github.com/google/site-kit-wp/issues/12445).
-* Add the splash screen Analytics activation error notification to Storybook. See [#12372](https://github.com/google/site-kit-wp/issues/12372).
-* Update the secondary header font size in the “Top Earning Pages” widget. See [#11640](https://github.com/google/site-kit-wp/issues/11640).
-* Simplify inline module data handling. See [#11120](https://github.com/google/site-kit-wp/issues/11120).
+* Add new "content events" event provider in conversion event tracking to all sites. See [#13281](https://github.com/google/site-kit-wp/issues/13281).
+* Add the initial datastore for the Feature Discovery Hub. See [#13245](https://github.com/google/site-kit-wp/issues/13245).
+* Add the `featureDiscoveryHub` feature flag. See [#13243](https://github.com/google/site-kit-wp/issues/13243).
+* Align PDF export survey triggers with the survey audience segments. See [#13241](https://github.com/google/site-kit-wp/issues/13241).
+* Update PDF report titles in download options panel. See [#13214](https://github.com/google/site-kit-wp/issues/13214).
+* Show the title of Ninja Form's content in Site Goals. See [#13156](https://github.com/google/site-kit-wp/issues/13156).
+* Add the newsletter CTA preview with pop-up and inline views for the Reader Revenue Manager express setup. See [#13026](https://github.com/google/site-kit-wp/issues/13026).
+* Add features menu for mobile and tablet viewports. See [#13013](https://github.com/google/site-kit-wp/issues/13013).
+* Add Email Reporting icon to the header. See [#13010](https://github.com/google/site-kit-wp/issues/13010).
+* Add a dashboard notification prompting users to resume an abandoned Reader Revenue Manager express setup. See [#13009](https://github.com/google/site-kit-wp/issues/13009).
+* Update the Reader Revenue Manager setup CTA banner for the upcoming sign-up form express setup. See [#12946](https://github.com/google/site-kit-wp/issues/12946).
+* Fix the email report section builder leaking the recipient's locale on the success path. See [#12883](https://github.com/google/site-kit-wp/issues/12883).
+* Fix visual issues with email reports when viewed in Outlook 365 on Windows 11. See [#12428](https://github.com/google/site-kit-wp/issues/12428).
+* Fix various issues with email reports UI/layout. See [#12427](https://github.com/google/site-kit-wp/issues/12427).
+* Include site URL from PageSpeed Insights links. Props Solaris-star, giri256. See [#10870](https://github.com/google/site-kit-wp/issues/10870).
+* Update Sign in with Google to allow usage with sites using WooCommerce's "open registration". See [#9942](https://github.com/google/site-kit-wp/issues/9942).
 
 **Fixed**
 
-* Fix Site Goals intro banner issue when the banner shows up to users with no GA access. See [#12786](https://github.com/google/site-kit-wp/issues/12786).
-* Fix the dashboard tour showing incorrect steps for view-only users without Analytics access. See [#12719](https://github.com/google/site-kit-wp/issues/12719).
-* Update icon color in help menu. Props omribz156. See [#12714](https://github.com/google/site-kit-wp/issues/12714).
+* Fix key metrics click target in PDF report. See [#13370](https://github.com/google/site-kit-wp/issues/13370).
+* Prevent WooCommerce conversion tracking event provider from erroring when an order ID doesn't resolve to a `WC_Order`, for example when the order is a refund. Props mikejb37-byte. See [#13270](https://github.com/google/site-kit-wp/issues/13270).
+* Fix issues with long titles in "Top performing keyboards" section in PDF reports. See [#13213](https://github.com/google/site-kit-wp/issues/13213).
+* Fix click targets in PDF report. See [#13212](https://github.com/google/site-kit-wp/issues/13212).
+* Fix bug that could cause the PDF Report generation notice to disappear when the download panel is closed and opened again. Props jibin7jose. See [#13175](https://github.com/google/site-kit-wp/issues/13175).
+* Fix bug that could cause badges to show 0% in some locales. Props Grvilla71, gunjanjaswal. See [#12867](https://github.com/google/site-kit-wp/issues/12867).
 
 [See changelog for all versions](https://raw.githubusercontent.com/google/site-kit-wp/main/changelog.txt).
