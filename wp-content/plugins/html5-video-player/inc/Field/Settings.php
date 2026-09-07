@@ -45,17 +45,10 @@ class Settings
             'fields' => [
                 [
                     'id' => 'h5vp_gutenberg_enable',
-                    'title' => 'Enable Gutenberg Shortcode Generator',
+                    'title' => __("Use the block editor for new players", "html5-video-player"),
                     'type' => 'switcher',
-                    'desc' => __("When enabled, the Gutenberg editor will enable to generate shortcode", "html5-video-player"),
+                    'desc' => __("When enabled, Add New Player opens in the Gutenberg block editor instead of the classic screen. Which editor a player uses is recorded when it is created, so changing this only affects players you add from now on.", "html5-video-player"),
                     'default' => true
-                ],
-                [
-                    'id' => 'h5vp_disable_video_shortcode',
-                    'title' => __("Disable [video id='id'] shortcode for this plugin", "html5-video-player"),
-                    'type' => 'switcher',
-                    'desc' => __("When enabled, the [video] shortcode will be disabled for this plugin to avoid conflicts.", "html5-video-player"),
-                    'default' => false,
                 ],
                 [
                     'id' => 'h5vp_pause_other_player',
@@ -73,7 +66,7 @@ class Settings
                 ],
                 // delete data during uninstall
                 [
-                    'id' => 'h5vp_delete_data_during_uninstall',
+                    'id' => 'h5vp_remove_data_on_uninstall',
                     'type' => 'switcher',
                     'title' => __('Delete data during uninstall', 'html5-video-player'),
                     'desc' => __("When enabled, the plugin will delete all its data when uninstalled.", "html5-video-player"),
