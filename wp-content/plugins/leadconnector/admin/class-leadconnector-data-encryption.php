@@ -313,6 +313,8 @@ class LeadConnector_Data_Encryption {
 			return sodium_bin2base64( $binary, SODIUM_BASE64_VARIANT_ORIGINAL );
 		}
 
+		// Encoding ciphertext for storage, not obfuscating source.
+		// phpcs:ignore WordPress.PHP.DiscouragedPHPFunctions.obfuscation_base64_encode
 		return base64_encode( $binary );
 	}
 
@@ -331,14 +333,18 @@ class LeadConnector_Data_Encryption {
 			try {
 				return sodium_base642bin( $b64, SODIUM_BASE64_VARIANT_ORIGINAL, true );
 			} catch ( Exception $e ) {
-				// Fall through to PHP's decoder below.
+				// Invalid sodium input; fall through to PHP's decoder.
+				unset( $e );
 			}
 		}
 
+		// Decoding stored ciphertext, not obfuscating source.
+		// phpcs:ignore WordPress.PHP.DiscouragedPHPFunctions.obfuscation_base64_decode
 		$decoded = base64_decode( $b64, true );
 		if ( false === $decoded || '' === $decoded ) {
 			// Some legacy rows may have been written with non-strict padding;
 			// retry once without strict mode before giving up.
+			// phpcs:ignore WordPress.PHP.DiscouragedPHPFunctions.obfuscation_base64_decode
 			$decoded = base64_decode( $b64, false );
 		}
 

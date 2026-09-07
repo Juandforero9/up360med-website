@@ -86,12 +86,16 @@ function leadconnector_decode_base64_payload( $payload ) {
 		try {
 			return sodium_base642bin( $payload, SODIUM_BASE64_VARIANT_ORIGINAL, true );
 		} catch ( Exception $e ) {
-			// Fall through to PHP's decoder below.
+			// Invalid sodium input; fall through to PHP's decoder.
+			unset( $e );
 		}
 	}
 
+	// Decoding a stored payload, not obfuscating source.
+	// phpcs:ignore WordPress.PHP.DiscouragedPHPFunctions.obfuscation_base64_decode
 	$decoded = base64_decode( $payload, true );
 	if ( false === $decoded || '' === $decoded ) {
+		// phpcs:ignore WordPress.PHP.DiscouragedPHPFunctions.obfuscation_base64_decode
 		$decoded = base64_decode( $payload, false );
 	}
 
@@ -740,6 +744,21 @@ function leadconnector_get_funnel_post_by_slug( $slug ) {
 
 	$post = get_post( $post_id );
 	if ( ! $post instanceof WP_Post || lead_connector_constants\LEADCONNECTOR_CUSTOM_POST_TYPE !== $post->post_type ) {
+		return null;
+	}
+
+	// Enforce WordPress post-status visibility. The slug index is built with
+	// 'post_status' => 'any' (see leadconnector_rebuild_funnel_slug_index())
+	// and is pruned only on before_delete_post, so a funnel moved to Draft,
+	// Pending, Private or Trash in wp-admin stays in the index. Without this
+	// gate process_page_request() would keep serving it to anonymous visitors
+	// with an HTTP 200 — i.e. unpublishing or trashing a funnel would not
+	// actually take the page down.
+	//
+	// The check lives in the resolver rather than the caller so every caller
+	// inherits it. current_user_can( 'read_post', ... ) preserves the ability
+	// of an editor/administrator to view a non-published funnel.
+	if ( 'publish' !== $post->post_status && ! current_user_can( 'read_post', $post->ID ) ) {
 		return null;
 	}
 

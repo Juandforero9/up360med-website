@@ -72,6 +72,14 @@ class LeadConnector_Uninstall {
 			'leadconnector_twicedaily_refresh_req',
 			'lc_twicedaily_refresh_req_v2',
 			'lc_twicedaily_refresh_req',
+			// Single-event hooks. These were previously never cleared, so any
+			// pending occurrence outlived the plugin in the autoloaded `cron`
+			// option — together with its serialized args, which for
+			// leadconnector_save_custom_values_event can be the whole
+			// custom-values payload.
+			'leadconnector_save_custom_values_event',
+			'leadconnector_sync_ai_page_wp_deleted_event',
+			'leadconnector_sync_ai_page_wp_status_event',
 		);
 
 		foreach ( $hooks as $hook ) {

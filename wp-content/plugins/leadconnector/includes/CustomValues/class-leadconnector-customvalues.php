@@ -87,9 +87,17 @@ class LeadConnector_CustomValues {
 	 */
 	private function get_location_id() {
 		$lead_connector_options = get_option( LEAD_CONNECTOR_OPTION_NAME );
-		return isset( $lead_connector_options[ lead_connector_constants\LEADCONNECTOR_OPTIONS_LOCATION_ID ] )
-			? $lead_connector_options[ lead_connector_constants\LEADCONNECTOR_OPTIONS_LOCATION_ID ]
-			: null;
+		if ( ! isset( $lead_connector_options[ lead_connector_constants\LEADCONNECTOR_OPTIONS_LOCATION_ID ] ) ) {
+			return null;
+		}
+
+		$location_id = $lead_connector_options[ lead_connector_constants\LEADCONNECTOR_OPTIONS_LOCATION_ID ];
+
+		if ( ! is_string( $location_id ) || ! preg_match( '/^[a-zA-Z0-9]{1,50}$/', $location_id ) ) {
+			return null;
+		}
+
+		return $location_id;
 	}
 
 	/**
@@ -345,6 +353,10 @@ class LeadConnector_CustomValues {
 			return null;
 		}
 
+		if ( ! is_string( $field_id ) || ! preg_match( '/^[a-zA-Z0-9_\-]{1,100}$/', $field_id ) ) {
+			return null;
+		}
+
 		$endpoint = str_replace(
 			array( '{lcLocationId}', '{fieldId}' ),
 			array( $location_id, $field_id ),
@@ -356,16 +368,29 @@ class LeadConnector_CustomValues {
 	}
 
 	/**
+	 * Sentinel value stored in transients to represent a confirmed null/missing
+	 * custom value. Prevents repeated API lookups for nonexistent keys.
+	 */
+	private const NEGATIVE_CACHE_SENTINEL = '__lc_null__';
+
+	/**
 	 * Get the resolved value for a custom value field key.
 	 *
 	 * @param string $field_key Custom value field key.
 	 * @return string|null
 	 */
 	public function get_value( $field_key ) {
+		if ( ! is_string( $field_key ) || ! preg_match( '/^[a-zA-Z_]\w{0,254}$/', $field_key ) ) {
+			return null;
+		}
+
 		$field_key_to_value_cache_key = lead_connector_constants\LEADCONNECTOR_FIELD_ID_VALUE_KEY_BASE . $field_key;
 		$cached_values                = get_transient( $field_key_to_value_cache_key );
 		$get_new_values               = get_transient( lead_connector_constants\LEADCONNECTOR_GET_NEW_VALUES_CACHE_KEY ) ?? false;
-		if ( $cached_values && ! $get_new_values ) {
+		if ( false !== $cached_values && ! $get_new_values ) {
+			if ( self::NEGATIVE_CACHE_SENTINEL === $cached_values ) {
+				return null;
+			}
 			return $cached_values;
 		}
 
@@ -402,6 +427,7 @@ class LeadConnector_CustomValues {
 			}
 		}
 
+		set_transient( $field_key_to_value_cache_key, self::NEGATIVE_CACHE_SENTINEL, MINUTE_IN_SECONDS );
 		return null;
 	}
 	/**

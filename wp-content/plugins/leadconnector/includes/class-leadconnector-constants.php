@@ -71,3 +71,12 @@ const LEADCONNECTOR_FIELD_ID_VALUE_KEY_BASE  = 'leadconnector_field_id_value_';
 const LEADCONNECTOR_GET_NEW_VALUES_CACHE_KEY = 'leadconnector_get_new_values_cache_key';
 
 const LEADCONNECTOR_DELETE_DATA_ON_UNINSTALL_OPTION = 'leadconnector_delete_data_on_uninstall';
+
+/**
+ * AI Pages edit-contract version (WP post meta).
+ * Missing / 1 = legacy highlight targets; >= 2 = Elementor data-id editing.
+ * Stamped by ghl-revex-backend on AI page create.
+ */
+const LEADCONNECTOR_AI_PAGE_VERSION_META_KEY = '_leadconnector_ai_page_version';
+/** Current contract version written by backend on new AI pages. */
+const LEADCONNECTOR_AI_PAGE_VERSION_CURRENT = 2;

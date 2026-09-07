@@ -262,6 +262,23 @@ final class LeadConnector_REST_Input_Guard {
 	 * @return null|\WP_Error
 	 */
 	private static function attach_proxy_json_graphs( WP_REST_Request $request ) {
+		// SECURITY: these two keys are guard-internal state, but they live in
+		// the same parameter bag as client input. WP_REST_Request::get_param()
+		// reads JSON, POST, GET and URL params, and neither key is declared in
+		// the route `args`, so sanitize_params()/has_valid_params() will
+		// neither sanitize nor strip a client-supplied copy. If we only set
+		// them conditionally, a caller can pre-seed
+		// `?_leadconnector_proxy_post_body_graph[foo]=bar` (with an empty POST
+		// body, so the branch below never fires) and the validator will read
+		// that array back as an "already sanitized" graph — bypassing
+		// proxy_sanitize_json_node() entirely on the way to update_post_meta(),
+		// wp_insert_post() and outbound URL construction.
+		//
+		// Therefore: always overwrite both keys, so any client-supplied value
+		// is unconditionally destroyed even when there is nothing to parse.
+		$request->set_param( '_leadconnector_proxy_data_graph', null );
+		$request->set_param( '_leadconnector_proxy_post_body_graph', null );
+
 		$data = $request->get_param( 'data' );
 		if ( is_string( $data ) && '' !== $data ) {
 			$graph = LeadConnector_Input_Validator::proxy_json_to_object( $data );

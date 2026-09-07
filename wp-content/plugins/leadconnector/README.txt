@@ -1,11 +1,11 @@
 === LeadConnector ===
-Contributors: varunvairavanlc, pranoylc, alphaenigma, iamnfinitylc, hemantlc, raahatsharma, paraglc, 
+Contributors: varunvairavanlc, pranoylc, alphaenigma, iamnfinitylc, hemantlc, raahatsharma, paraglc
 Plugin URI: https://www.leadconnectorhq.com/
 Tags: chat-widget, crm, funnels, forms, marketing-automation
 Requires at least: 6.2
-Tested up to: 7.0
+Tested up to: 7.1
 Requires PHP: 7.4
-Stable tag: 4.0.0
+Stable tag: 4.0.6
 License: GPLv3
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
 
@@ -321,6 +321,51 @@ When connected features are used, relevant account, location, site, funnel, widg
 
 == Changelog ==
 
+= 4.0.6 =
+**Security**
+
+* Security patch. Recommended for all sites. Safe to upgrade.
+
+= 4.0.5 =
+**Fixed**
+
+* Funnel forms using Cloudflare Turnstile captcha (replacing Google reCAPTCHA) now load and validate correctly. Added `challenges.cloudflare.com` to the native-mode Content-Security-Policy `script-src` and `frame-src` directives so the Turnstile script can execute and its challenge iframe can render.
+* Reputation Hub review widget iframe no longer blocked by CSP on native-mode funnel pages — added `*.reputationhub.site` and `reputationhub.site` to the `frame-src` directive.
+* Google Ads conversion tracking and remarketing scripts (`*.googleadservices.com`, `*.doubleclick.net`) added to the script host allowlist so they are no longer blocked by CSP on funnel pages.
+
+= 4.0.4 =
+**Added**
+
+* Universal AI Pages editing in the platform preview: any Elementor text or image widget can be selected and customized.
+* AI page edit contract versioning via post meta `_leadconnector_ai_page_version`. Newer pages use the universal widget path; older pages without the meta (or below version 2) keep the legacy CSS-class hover and edit targets.
+
+= 4.0.3 =
+**Added**
+
+* Added support for AI pages in Draft mode.
+* Draft AI pages can be previewed in the platform before going live.
+* Publish or unpublish changes in WordPress Admin now stay in sync with the platform dashboard.
+
+**Improved**
+
+* Custom values with HTML formatting (links, bold text, etc.) now display correctly on your site instead of showing raw markup.
+
+= 4.0.2 =
+**Added**
+
+* Added **Rocket.net**, **HighLevel**, and **LeadConnector** as selectable options in the hosting provider dropdown on the support request form so site owners can identify their hosting environment more accurately when reporting an issue.
+
+**Changed**
+
+* Renamed the **Send feedback** header button to **Support** and replaced its chat-bubble icon with a headset icon for clearer intent.
+* Repositioned the **Submit feedback or report an issue** link on the pre-connection auth wall from the bottom-left footer to the top-right of the white panel, added a matching headset icon, and restyled it as an outlined button so it visually pairs with the connected-state **Support** button.
+
+= 4.0.1 =
+**Improved**
+
+* Two-way sync for AI-generated pages keeps create, update, and delete events aligned between LeadConnector and WordPress throughout the page lifecycle.
+* AI Pages customizations now apply more efficiently, with reduced operational overhead when syncing style and content changes.
+
 = 4.0.0 =
 **Added**
 
@@ -551,6 +596,9 @@ When connected features are used, relevant account, location, site, funnel, widg
 * Fix: Improved cron job scheduling.
 
 == Upgrade Notice ==
+
+= 4.0.6 =
+Security patch. Recommended for all sites. Safe to upgrade.
 
 = 4.0.0 =
 Major admin experience update: adds in-header **Send feedback** support links (auth wall + connected admin), polishes connected-screen layout/background handling, and fixes custom-value title substitution so multilingual plugins are not broken by whole-string escaping. Safe to upgrade.

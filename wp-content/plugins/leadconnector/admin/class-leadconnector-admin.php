@@ -151,6 +151,8 @@ class LeadConnector_Admin {
 		// loopback `wp_remote_post()` pattern that copied WordPress auth
 		// cookies into a plugin-generated HTTP request.
 		add_action( 'leadconnector_save_custom_values_event', array( $this, 'leadconnector_handle_save_custom_values_event' ), 10, 1 );
+		add_action( 'leadconnector_sync_ai_page_wp_deleted_event', array( $this, 'leadconnector_handle_sync_ai_page_wp_deleted_event' ), 10, 1 );
+		add_action( 'leadconnector_sync_ai_page_wp_status_event', array( $this, 'leadconnector_handle_sync_ai_page_wp_status_event' ), 10, 2 );
 	}
 
 
@@ -722,6 +724,8 @@ class LeadConnector_Admin {
 			'wp_save_options',
 			'wp_insert_post',
 			'wp_delete_post',
+			'clear_cached_custom_values',
+			'wp_purge_all_domains_cache',
 		);
 		if ( 'GET' === $request->get_method() && in_array( $endpoint, $leadconnector_mutating_proxy_endpoints, true ) ) {
 			$leadconnector_rest_nonce = $request->get_header( 'X-WP-Nonce' );
@@ -860,9 +864,9 @@ class LeadConnector_Admin {
 			}
 
 			return array(
-				'previous_options' => $previous_options,
-				'options_saved'    => $option_saved,
-				'response'         => $token_response,
+				'options_saved' => $option_saved,
+				'success'       => ! property_exists( $token_response, 'error' ),
+				'location_id'   => leadconnector_api_prop( $token_response, 'locationId' ),
 			);
 		}
 
@@ -1059,6 +1063,15 @@ class LeadConnector_Admin {
 					}
 				}
 
+				// Normalize before every comparison below. `template_id`
+				// arrives from a JSON graph, so it may legitimately be the
+				// string "-1" rather than the integer -1. Both guards in this
+				// branch are strict comparisons against an int, so an
+				// un-normalized string value would simultaneously skip the
+				// duplicate-slug check and take the update path with a
+				// non-integer post ID.
+				$template_id = is_numeric( $template_id ) ? (int) $template_id : -1;
+
 				$existing_funnel_post_id = leadconnector_get_funnel_post_id_by_slug( $leadconnector_slug );
 				if ( $existing_funnel_post_id > 0 && -1 === $template_id ) {
 					return ( array(
@@ -1078,6 +1091,29 @@ class LeadConnector_Admin {
 				$post_data['post_type']    = lead_connector_constants\LEADCONNECTOR_CUSTOM_POST_TYPE;
 				$post_data['post_status']  = 'publish';
 				if ( -1 !== $template_id ) {
+					// Object-level authorization. Without this, any caller past
+					// the route's permission callback could pass an arbitrary
+					// post ID and wp_insert_post() would *update* that post:
+					// blanking post_content, retyping it to the funnel CPT and
+					// forcing it to publish. Mirror the checks the sibling
+					// `wp_delete_post` branch already performs on its target.
+					$leadconnector_target_post = get_post( $template_id );
+					if ( ! $leadconnector_target_post instanceof WP_Post
+						|| lead_connector_constants\LEADCONNECTOR_CUSTOM_POST_TYPE !== $leadconnector_target_post->post_type
+					) {
+						return array(
+							'error'   => true,
+							'message' => 'Invalid template_id: not a LeadConnector funnel post.',
+						);
+					}
+
+					if ( ! current_user_can( 'edit_post', $template_id ) ) {
+						return array(
+							'error'   => true,
+							'message' => 'You are not allowed to edit this funnel post.',
+						);
+					}
+
 					$post_data['ID'] = $template_id;
 				}
 				$post_id = wp_insert_post( $post_data );
@@ -1268,6 +1304,15 @@ class LeadConnector_Admin {
 				return array(
 					'error'   => true,
 					'message' => __( 'Invalid post ID.', 'leadconnector' ),
+					'field'   => 'post_id',
+				);
+			}
+
+			$target_post = get_post( $post_id );
+			if ( ! $target_post || lead_connector_constants\LEADCONNECTOR_CUSTOM_POST_TYPE !== $target_post->post_type ) {
+				return array(
+					'error'   => true,
+					'message' => __( 'Post not found or not a LeadConnector funnel.', 'leadconnector' ),
 					'field'   => 'post_id',
 				);
 			}
@@ -3845,6 +3890,188 @@ class LeadConnector_Admin {
 	}
 
 	/**
+	 * Schedule a deferred sync when a page post is trashed or deleted in WP Admin.
+	 *
+	 * @since 3.0.35
+	 * @param int $post_id Post ID being removed.
+	 * @return void
+	 */
+	public function schedule_sync_ai_page_deleted_from_wp( $post_id ) {
+		$post_id = (int) $post_id;
+		if ( $post_id <= 0 ) {
+			return;
+		}
+
+		if ( 'page' !== get_post_type( $post_id ) ) {
+			return;
+		}
+
+		$args = array( $post_id );
+		if ( false === wp_next_scheduled( 'leadconnector_sync_ai_page_wp_deleted_event', $args ) ) {
+			wp_schedule_single_event( time(), 'leadconnector_sync_ai_page_wp_deleted_event', $args );
+		}
+	}
+
+	/**
+	 * WP-Cron: notify LeadConnector services that a WP page was deleted in WP Admin.
+	 *
+	 * @since 3.0.35
+	 * @param int $wp_page_id WordPress page post ID.
+	 * @return void
+	 */
+	public function leadconnector_handle_sync_ai_page_wp_deleted_event( $wp_page_id ) {
+		$wp_page_id = (int) $wp_page_id;
+		if ( $wp_page_id <= 0 ) {
+			return;
+		}
+
+		$leadconnector_options = get_option( LEAD_CONNECTOR_OPTION_NAME );
+		if ( empty( $leadconnector_options ) || ! is_array( $leadconnector_options ) ) {
+			return;
+		}
+
+		$location_id = isset( $leadconnector_options[ lead_connector_constants\LEADCONNECTOR_OPTIONS_LOCATION_ID ] )
+			? trim( (string) $leadconnector_options[ lead_connector_constants\LEADCONNECTOR_OPTIONS_LOCATION_ID ] )
+			: '';
+		if ( '' === $location_id || 'leadconnector_disconnect' === $location_id ) {
+			return;
+		}
+
+		$wp_id = $this->get_cdn_wp_id();
+		if ( '' === $wp_id ) {
+			return;
+		}
+
+		$endpoint = sprintf(
+			'wordpress/ai-pages/%s/site/%s/sync-wp-delete',
+			rawurlencode( $location_id ),
+			rawurlencode( $wp_id )
+		);
+
+		$response = $this->leadconnector_oauth_wp_remote_v2(
+			'post',
+			$endpoint,
+			array(
+				'wpPageId' => (string) $wp_page_id,
+			)
+		);
+
+		if ( ! empty( $response['error'] ) ) {
+			LeadConnector_Logger::get_instance()->warning(
+				'leadconnector_sync_ai_page_wp_deleted.failed',
+				array(
+					'wp_page_id'  => $wp_page_id,
+					'http_code'   => isset( $response['http_code'] ) ? (int) $response['http_code'] : null,
+					'location_id' => $location_id,
+					'wp_id'       => $wp_id,
+				)
+			);
+		}
+	}
+
+	/**
+	 * Schedule a deferred sync when a page post_status changes in WP Admin.
+	 *
+	 * Fires on `transition_post_status`. Only acts on `page` post types and
+	 * only on publish↔draft transitions. Trash/delete transitions are handled
+	 * separately by `schedule_sync_ai_page_deleted_from_wp`.
+	 *
+	 * @param string  $new_status New post status.
+	 * @param string  $old_status Old post status.
+	 * @param WP_Post $post       Post object.
+	 * @return void
+	 */
+	public function schedule_sync_ai_page_status_from_wp( $new_status, $old_status, $post ) {
+		if ( ! $post instanceof \WP_Post || 'page' !== $post->post_type ) {
+			return;
+		}
+
+		if ( $new_status === $old_status ) {
+			return;
+		}
+
+		if ( 'trash' === $new_status || 'trash' === $old_status ) {
+			return;
+		}
+
+		$is_publish_change = ( 'publish' === $new_status || 'publish' === $old_status );
+		if ( ! $is_publish_change ) {
+			return;
+		}
+
+		$post_id = (int) $post->ID;
+		if ( $post_id <= 0 ) {
+			return;
+		}
+
+		$mapped_status = ( 'publish' === $new_status ) ? 'publish' : 'draft';
+		$args          = array( $post_id, $mapped_status );
+		if ( false === wp_next_scheduled( 'leadconnector_sync_ai_page_wp_status_event', $args ) ) {
+			wp_schedule_single_event( time(), 'leadconnector_sync_ai_page_wp_status_event', $args );
+		}
+	}
+
+	/**
+	 * WP-Cron: notify LeadConnector services that a WP page post_status changed.
+	 *
+	 * @since 3.0.37
+	 * @param int    $wp_page_id  WordPress page post ID.
+	 * @param string $post_status New WordPress post status.
+	 * @return void
+	 */
+	public function leadconnector_handle_sync_ai_page_wp_status_event( $wp_page_id, $post_status ) {
+		$wp_page_id = (int) $wp_page_id;
+		if ( $wp_page_id <= 0 ) {
+			return;
+		}
+
+		$leadconnector_options = get_option( LEAD_CONNECTOR_OPTION_NAME );
+		if ( empty( $leadconnector_options ) || ! is_array( $leadconnector_options ) ) {
+			return;
+		}
+
+		$location_id = isset( $leadconnector_options[ lead_connector_constants\LEADCONNECTOR_OPTIONS_LOCATION_ID ] )
+			? trim( (string) $leadconnector_options[ lead_connector_constants\LEADCONNECTOR_OPTIONS_LOCATION_ID ] )
+			: '';
+		if ( '' === $location_id || 'leadconnector_disconnect' === $location_id ) {
+			return;
+		}
+
+		$wp_id = $this->get_cdn_wp_id();
+		if ( '' === $wp_id ) {
+			return;
+		}
+
+		$endpoint = sprintf(
+			'wordpress/ai-pages/%s/site/%s/sync-wp-status',
+			rawurlencode( $location_id ),
+			rawurlencode( $wp_id )
+		);
+
+		$response = $this->leadconnector_oauth_wp_remote_v2(
+			'post',
+			$endpoint,
+			array(
+				'wpPageId'   => (string) $wp_page_id,
+				'postStatus' => (string) $post_status,
+			)
+		);
+
+		if ( ! empty( $response['error'] ) ) {
+			LeadConnector_Logger::get_instance()->warning(
+				'leadconnector_sync_ai_page_wp_status.failed',
+				array(
+					'wp_page_id'  => $wp_page_id,
+					'post_status' => $post_status,
+					'http_code'   => isset( $response['http_code'] ) ? (int) $response['http_code'] : null,
+					'location_id' => $location_id,
+					'wp_id'       => $wp_id,
+				)
+			);
+		}
+	}
+
+	/**
 	 * Admin notice when native funnel mode renders remote LeadConnector HTML.
 	 *
 	 * @return void
@@ -4923,6 +5150,8 @@ class LeadConnector_Admin {
 			'reputationhub.site',
 			// LC's media-storage CDN (`assets.cdn.filesafe.space`).
 			'*.filesafe.space',
+			// Cloudflare Turnstile captcha (replaces Google reCAPTCHA).
+			'challenges.cloudflare.com',
 			// Google-hosted CDNs LC funnels commonly load static assets
 			// and fonts from.
 			'*.googleapis.com',
@@ -4946,6 +5175,9 @@ class LeadConnector_Admin {
 			'*.google-analytics.com',
 			'connect.facebook.net',
 			'*.facebook.net',
+			// Google Ads conversion tracking / remarketing.
+			'*.googleadservices.com',
+			'*.doubleclick.net',
 		);
 
 		/**
@@ -5134,6 +5366,9 @@ class LeadConnector_Admin {
 			'https://www.google.com',
 			'https://*.leadconnectorhq.com',
 			'https://*.msgsndr.com',
+			'https://challenges.cloudflare.com',
+			'https://*.reputationhub.site',
+			'https://reputationhub.site',
 		);
 
 		// `form-action` keeps funnel form POSTs scoped to LC. Funnels

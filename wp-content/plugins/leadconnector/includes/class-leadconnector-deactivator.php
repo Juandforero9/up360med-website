@@ -58,5 +58,12 @@ class LeadConnector_Deactivator {
 		wp_clear_scheduled_hook( 'leadconnector_twicedaily_refresh_req' );
 		wp_clear_scheduled_hook( 'lc_twicedaily_refresh_req_v2' );
 		wp_clear_scheduled_hook( 'lc_twicedaily_refresh_req' );
+
+		// Single-event hooks. A pending occurrence would otherwise stay in the
+		// autoloaded `cron` option after deactivation with no handler
+		// registered to run it.
+		wp_clear_scheduled_hook( 'leadconnector_save_custom_values_event' );
+		wp_clear_scheduled_hook( 'leadconnector_sync_ai_page_wp_deleted_event' );
+		wp_clear_scheduled_hook( 'leadconnector_sync_ai_page_wp_status_event' );
 	}
 }
