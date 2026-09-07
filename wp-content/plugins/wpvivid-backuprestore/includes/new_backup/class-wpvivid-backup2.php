@@ -755,7 +755,7 @@ class WPvivid_Backup_2
             $wpvivid_plugin->update_last_backup_task($task_msg);
 
             $task_msg = WPvivid_taskmanager::get_task($task_id);
-            update_option('wpvivid_last_msg',$task_msg,'no');
+            WPvivid_Option::update_last_backup_message($task_msg);
 
             $this->clear_monitor_schedule($task_id);
 
@@ -842,7 +842,7 @@ class WPvivid_Backup_2
             $this->add_clean_backup_data_event($task_id);
 
             $task_msg = WPvivid_taskmanager::get_task($task_id);
-            update_option('wpvivid_last_msg',$task_msg,'no');
+            WPvivid_Option::update_last_backup_message($task_msg);
 
             global $wpvivid_plugin;
             if($wpvivid_plugin->wpvivid_log)
@@ -1854,6 +1854,10 @@ class WPvivid_Backup_2
         $exclude_default[20]['path'] = WP_CONTENT_DIR.'/'.'wpvivid_uploads';
         $exclude_default[21]['type'] = 'folder';
         $exclude_default[21]['path'] = WP_CONTENT_DIR.'/'.'WPvivid_Uploads';
+        $exclude_default[22]['type'] = 'folder';
+        $exclude_default[22]['path'] = WP_CONTENT_DIR.'/'.'compressx';
+        $exclude_default[23]['type'] = 'folder';
+        $exclude_default[23]['path'] = WP_CONTENT_DIR.'/'.'compressx-nextgen';
 
         if(!empty($exclude_default))
         {

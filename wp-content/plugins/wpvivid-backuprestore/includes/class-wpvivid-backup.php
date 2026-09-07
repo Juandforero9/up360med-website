@@ -20,6 +20,9 @@ define('WPVIVID_BACKUP_ROOT_WP_CONTENT','wp-content');
 define('WPVIVID_BACKUP_ROOT_CUSTOM','custom');
 define('WPVIVID_BACKUP_ROOT_WP_ROOT','root');
 define('WPVIVID_BACKUP_ROOT_WP_UPLOADS','uploads');
+
+define('WPVIVID_BACKUP_ROOT_UPLOADS_RELATIVE', 'uploads-relative');
+
 class WPvivid_Backup_Task
 {
     protected $task;

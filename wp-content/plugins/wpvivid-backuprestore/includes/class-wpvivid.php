@@ -77,6 +77,8 @@ class WPvivid
         add_action('plugins_loaded', array($this, 'load_remote_storage'),10);
 
         include_once WPVIVID_PLUGIN_DIR . '/includes/class-wpvivid-setting.php';
+        include_once WPVIVID_PLUGIN_DIR . '/includes/class-wpvivid-option.php';
+        WPvivid_Option::maybe_upgrade();
         include_once WPVIVID_PLUGIN_DIR . '/includes/class-wpvivid-tools.php';
         include_once WPVIVID_PLUGIN_DIR . '/includes/class-wpvivid-schedule.php';
         include_once WPVIVID_PLUGIN_DIR . '/includes/class-wpvivid-taskmanager.php';
@@ -4426,7 +4428,7 @@ class WPvivid
 
     public function update_last_backup_time($task)
     {
-        WPvivid_Setting::update_option('wpvivid_last_msg',$task);
+        return WPvivid_Option::update_last_backup_message($task);
     }
 
     public function update_last_backup_task($task)
