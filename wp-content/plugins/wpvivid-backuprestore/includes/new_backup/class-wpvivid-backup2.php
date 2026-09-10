@@ -1621,9 +1621,44 @@ class WPvivid_Backup_2
             $json=wp_json_encode($json);
             $crypt=new WPvivid_crypt(base64_decode($options[$url]['token']));
             $data=$crypt->encrypt_message($json);
+            if ($data === false)
+            {
+                $ret['result'] = WPVIVID_FAILED;
+                $ret['error'] = 'Data encryption failed.';
+                echo wp_json_encode($ret);
+                die();
+            }
             $data=base64_encode($data);
-            $args['body']=array('wpvivid_content'=>$data,'wpvivid_action'=>'send_to_site_connect');
-            $response=wp_remote_post($url,$args);
+
+            if (!isset($options[$url]['auth_key'], $options[$url]['protocol_version']) ||
+                !is_string($options[$url]['auth_key']) ||
+                preg_match('/\A[a-f0-9]{64}\z/', $options[$url]['auth_key']) !== 1 ||
+                (int) $options[$url]['protocol_version'] !== 2)
+            {
+                $ret['result'] = WPVIVID_FAILED;
+                $ret['error']  = 'The migration key uses an unsupported security protocol. Please delete it and generate a new key.';
+                echo wp_json_encode($ret);
+                die();
+            }
+
+            $action = 'send_to_site_connect';
+
+            $signature = hash_hmac(
+                'sha256',
+                $action . "\n" . $data,
+                $options[$url]['auth_key']
+            );
+
+            $args['body'] = array(
+                'wpvivid_content'          => $data,
+                'wpvivid_action'           => $action,
+                'wpvivid_protocol_version' => 2,
+                'wpvivid_client_type'      => 'free',
+                'wpvivid_client_version'   => defined('WPVIVID_PLUGIN_VERSION') ? WPVIVID_PLUGIN_VERSION : '',
+                'wpvivid_signature'        => $signature,
+            );
+
+            $response = wp_remote_post($url, $args);
 
             if ( is_wp_error( $response ) )
             {
@@ -1676,6 +1711,8 @@ class WPvivid_Backup_2
 
             $remote_option['url'] = $options[$url]['url'];
             $remote_option['token'] = $options[$url]['token'];
+            $remote_option['auth_key'] = $options[$url]['auth_key'];
+            $remote_option['protocol_version'] = $options[$url]['protocol_version'];
             $remote_option['type'] = WPVIVID_REMOTE_SEND_TO_SITE;
             $remote_options['temp'] = $remote_option;
 
@@ -1689,16 +1726,6 @@ class WPvivid_Backup_2
             $backup['remote_options'] = $remote_options;
             $backup['type']='Migrate';
             $backup['export']='auto_migrate';
-
-            /*
-            $backup_task = new WPvivid_Backup_Task();
-            $ret = $backup_task->new_backup_task($backup, 'Manual', 'transfer');
-            $task_id = $ret['task_id'];
-            global $wpvivid_plugin;
-            $wpvivid_plugin->check_backup($task_id, $backup);
-            echo wp_json_encode($ret);
-            die();
-            */
 
             $settings=$this->get_backup_settings($backup);
             $task=new WPvivid_Backup_Task_2();

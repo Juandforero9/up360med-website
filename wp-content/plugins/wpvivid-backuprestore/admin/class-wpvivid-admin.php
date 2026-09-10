@@ -577,6 +577,16 @@ class WPvivid_Admin
         <?php
     }
 
+    /**
+     * Displays the legacy Free migration and restore completion notices.
+     *
+     * The method is no longer registered by the current Free version. It is
+     * retained temporarily for compatibility with older Free/Pro combinations.
+     *
+     * @deprecated 0.9.135
+     *
+     * @return void
+     */
     public function migrate_notice()
     {
         $migrate_notice=false;
